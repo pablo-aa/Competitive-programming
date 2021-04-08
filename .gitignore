@@ -2,3 +2,4 @@
 *.toc
 create_latex.py
 /images
+.gitignore
