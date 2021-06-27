@@ -1,6 +1,5 @@
 // LCS  maior subs comum
-// a,b = indice maximo do vetor
-// s1={1,2,3}  a = 2
+// ** usar s[1 - n]
 #define MAXN 1010
 
 int s1[MAXN], s2[MAXN], tab[MAXN][MAXN];

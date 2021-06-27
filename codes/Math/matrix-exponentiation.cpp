@@ -58,7 +58,7 @@ Matrix fexp(Matrix b, ll e, int n) {
     |1 0   ...  0|         |Fn-2|   |Fk+n-2|
     |0 1 0 ...  0|         |Fn-3|   |Fk+n-3|
            ...              ...      ...
-    |0 0 0 ...  1|         |F0  |   |Fk    |
+    |0 0 0 ...1 0|         |F0  |   |Fk    |
 */
 
 int main() {
