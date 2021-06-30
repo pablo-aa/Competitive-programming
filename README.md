@@ -8,6 +8,7 @@ Working on some algorithms for coding competitions 🖥
 -  [Algorithms](codes/Algorithm)
 -  [Dynamic programmig](codes/Dp)
 -  [Data Structure](codes/Ds)
+-  [Geometry](codes/Geometry)
 -  [Graph](codes/Graph)
 -  [Math](codes/Math)
 
