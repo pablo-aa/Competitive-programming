@@ -11,6 +11,8 @@ void unite(int a, int b){
   a = get(a);
   b = get(b);
 
+  if(a == b) return;
+
   if(r[a] == r[b]){
   	p[a] = b;
   	r[b]++;
