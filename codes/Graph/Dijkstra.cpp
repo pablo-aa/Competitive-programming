@@ -1,5 +1,5 @@
 // Dijkstra
-// O(n + m log m)
+// O(V + E log E)
 #define INF 1e9+10
 vector<pair<int, int>> adj[MAXN];
 vector<int> dist;

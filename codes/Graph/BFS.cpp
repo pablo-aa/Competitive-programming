@@ -1,8 +1,11 @@
 // BFS
-// O(n+m)
-vector<vector<int> > g(MAX_NODES);
-vector<bool> visited(MAX_NODES);
-vector<int> dist(MAX_NODES, oo);
+// O(V+E)
+
+const int MAXN { 100010 };
+
+vector<vector<int> > g(MAXN);
+vector<bool> visited(MAXN);
+vector<int> dist(MAXN, oo);
 queue<int> q;
 
 void bfs(int s){
