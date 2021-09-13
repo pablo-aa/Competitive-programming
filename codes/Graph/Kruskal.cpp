@@ -1,10 +1,12 @@
 // Minimum Spanning tree 
 // w/ DSU structure
 
-typedef struct{
-	int a, b;
-	int w;
-} edge;
+struct edge{
+	int a, b, w;
+	bool operator<(edge const& other) {
+    return w < other.w;
+  }
+};
 
 /* ----- DSU Structure ------*/
 int get(int x) {
@@ -23,16 +25,19 @@ void unite(int a, int b){
 // Initializing values in main()
 for(int i = 1; i <= n; i++) p[i]=i;
 
-/* -------------------------*/
+/* -------- main ---------*/
 
-vector<edge> edges;
+vector<edge> edges, result;
 int total_weight;
 
 void mst(){
-	// sort edges
+
+	sort(edges.begin(), edges.end());
+
 	for(auto e : edges){
 		if(get(e.a) != get(e.b)){
 			unite(e.a, e.b);
+			result.pb(e);
 			total_weight+=e.w;
 		}
 	}
