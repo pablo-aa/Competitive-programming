@@ -25,10 +25,10 @@ void unite(int a, int b){
 // Initializing values in main()
 for(int i = 1; i <= n; i++) p[i]=i;
 
-/* -------- main ---------*/
+/* ------------------------*/
 
 vector<edge> edges, result;
-int total_weight;
+int total_weight=0;
 
 void mst(){
 
