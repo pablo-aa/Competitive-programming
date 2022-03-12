@@ -2,13 +2,12 @@
 // Algorithm: Monotone Chain
 // Complexity: O(n) + ordenacao O(nlogn)
 
-// Regra mao direita p2->p1 (dedao p cima ? esq : dir || colinear)
+#define vp vector<pt>
+typedef int T; 
 
-int esq(point p1, point p2, point p3){
-	cod cross = (p2-p1)^(p3-p1);
-	if(cross == 0) return 0;
-	else if(cross > 0) return 1;
-	return -1;
+int ccw(pt a, pt b, pt e){ // -1=dir; 0=col; 1=esq; esq = AE está a esquerda de AB
+    T tmp = (b-a)^(e-a);
+    return (tmp > EPS) - (tmp < -EPS);
 }
 
 vector<point> convex_hull(vector<point> p) {

@@ -1,281 +1,345 @@
-// 2D structures template
+// 2D Geometry lib
+// Good questions: Corner cases? Imprecisions?
 
-// Code from - Github: Tiagosf00/Competitive-Programming !!
-// Writer: Tiago de Souza Fernandes
+typedef ld T; 
+bool eq(T a, T b){ return fabs(a - b) <= EPS; }
 
-#define EPS 1e-6
-#define PI acos(-1)
-#define vp vector<point>
+// typedef int T; // or int
+// bool eq(T a, T b){ return (a==b); }
 
-// typedef int cod;
-// bool eq(cod a, cod b){ return (a==b); }
-typedef ld cod;
-bool eq(cod a, cod b){ return abs(a - b) <= EPS; }
+#define sq(x) ((x)*(x))
+#define rad_to_deg(x) (180/PI)*x
+#define vp vector<pt>
 
-struct point{
-    cod x, y;
-    int id;
-    point(cod x=0, cod y=0): x(x), y(y){}
+const ld DINF = 1e18;
 
+struct pt{
+    T x, y;
 
-    point operator+(const point &o) const{
-        return {x+o.x, y+o.y};
-    }
-    point operator-(const point &o) const{
-        return {x-o.x, y-o.y};
-    }
-    point operator*(cod t) const{
-        return {x*t, y*t};
-    }
-    point operator/(cod t) const{
-        return {x/t, y/t};
-    }
-    cod operator*(const point &o) const{ // dot
-        return x * o.x + y * o.y;
-    }
-    cod operator^(const point &o) const{ // cross
-        return x * o.y - y * o.x;
-    }
-    bool operator<(const point &o) const{
-        if(!eq(x, o.x)) return x < o.x;
-        return y < o.y;
-    }
-    bool operator==(const point &o) const{
-        return eq(x, o.x) and eq(y, o.y);
-    }
+    pt(T x=0, T y=0): x(x), y(y){};
 
+    pt operator+(const pt &o) const{ return {x+o.x, y+o.y}; }
+    pt operator-(const pt &o) const{ return {x-o.x, y-o.y}; }
+    pt operator*(T t) const{ return {x*t, y*t};}
+    pt operator/(T t) const{return {x/t, y/t};}
+    T operator*(const pt &o) const{ return x * o.x + y * o.y; }
+    T operator^(const pt &o) const{ return x * o.y - y * o.x; }
+
+    bool operator<(const pt &o) const{ if(!eq(x, o.x)) return x < o.x; return y < o.y; }
+    bool operator==(const pt &o) const{ return eq(x, o.x) and eq(y, o.y); }
 };
 
-ld norm(point a){ // Modulo
-    return sqrt(a*a);
-}
-bool nulo(point a){
-    return (eq(a.x, 0) and eq(a.y, 0));
+
+//\ PONTO E VETOR /\\
+
+bool nulo(pt p){ return (eq(p.x, 0) && eq(p.y, 0));} // confere se = nulo
+
+ld dist(pt p, pt q){ return hypot(p.y - q.y, p.x - q.x); } // distancia
+
+ld dist2(pt p, pt q){ return sq(p.y - q.y) + sq(p.x - q.x); } // distancia*distancia
+
+ld norm(pt p){ return dist(pt(0, 0), p); } // norma do vetor
+
+ld sArea(pt p, pt q, pt r) { // 
+    return ((q-p)^(r-q))/2;
 }
 
-int ccw(point a, point b, point e){ //-1=dir; 0=collinear; 1=esq;
-    cod tmp = (b-a)^(e-a); // from a to b
-    return (tmp > EPS) - (tmp < -EPS);
-    // if int: tira comentario
-    // if(tmp==0) return 0;
-    // if(tmp>0) return 1;
-    // return -1;
+bool col(pt p, pt q, pt r) { // se p, q e r sao colin.
+    return eq(sArea(p, q, r), 0);
 }
-point rotccw(point p, ld a){
-    // a = PI*a/180; // graus
-    return point((p.x*cos(a)-p.y*sin(a)), (p.y*cos(a)+p.x*sin(a)));
-}
-point rot90cw(point a) { return point(a.y, -a.x); };
-point rot90ccw(point a) { return point(-a.y, a.x); };
 
-ld proj(point a, point b){ // a sobre b
-    return a*b/norm(b);
+ld angle(pt p){ // angle of a vector
+    ld ang = atan2(p.y, p.x);
+    if (ang < 0) ang += 2*PI;
+    return ang;
 }
-ld angle(point a, point b){ // em radianos
-    ld ang = a*b / norm(a) / norm(b);
+
+ld angle(pt p, pt q){ // angle between two vectors
+    ld ang = p*q / norm(p) / norm(q);
     return acos(max(min(ang, (ld)1), (ld)-1));
 }
-ld angle_vec(point v){
-    // return 180/PI*atan2(v.x, v.y); // graus
-    return atan2(v.x, v.y);
-}
-ld order_angle(point a, point b){ // from a to b ccw (a in front of b)
-    ld aux = angle(a,b)*180/PI;
-    return ((a^b)<=0 ? aux:360-aux);
-}
-bool angle_less(point a1, point b1, point a2, point b2){ // ang(a1,b1) <= ang(a2,b2)
-    point p1((a1*b1), abs((a1^b1)));
-    point p2((a2*b2), abs((a2^b2)));
-    return (p1^p2) <= 0;
+
+int ccw(pt a, pt b, pt e){ // -1=dir; 0=col; 1=esq; esq = AE está a esquerda de AB
+    T tmp = (b-a)^(e-a);
+    return (tmp > EPS) - (tmp < -EPS);
 }
 
-ld area(vp &p){ // (points sorted)
-    ld ret = 0;
-    for(int i=2;i<(int)p.size();i++)
-        ret += (p[i]-p[0])^(p[i-1]-p[0]);
-    return abs(ret/2);
-}
-ld areaT(point &a, point &b, point &c){
-    return abs((b-a)^(c-a))/2.0;
+pt rotccw(pt p, ld a){ // rotacionar ccw
+    // a = PI*a/180; // graus
+    return pt((p.x*cos(a)-p.y*sin(a)), (p.y*cos(a)+p.x*sin(a)));
 }
 
-point center(vp &A){
-    point c = point();
+pt rot90cw(pt p) { return pt(p.y, -p.x); };
+
+pt rot90ccw(pt p) { return pt(-p.y, p.x); };
+
+ld proj(pt a, pt b){ // a sobre b
+    return a*b/norm(b);
+}
+
+int paral(pt u, pt v) { // se u e v sao paralelos
+    if (!eq(u^v, 0)) return 0;
+    if ((u.x > EPS) == (v.x > EPS) && (u.y > EPS) == (v.y > EPS))
+        return 1;
+    return -1;
+}
+
+pt mirror(pt m1, pt m2, pt p){
+    // mirror pt p around segment m1m2
+    pt seg = m2-m1;
+    ld t0 = ((p-m1)*seg) / (seg*seg);
+    pt ort = m1 + seg*t0;
+    pt pm = ort-(p-ort);
+    return pm;
+}
+
+pt center(vp &A){ // center of pts
+    pt c = pt();
     int len = A.size();
     for(int i=0;i<len;i++)
         c=c+A[i];
     return c/len;
 }
 
-point forca_mod(point p, ld m){
-    ld cm = norm(p);
-    if(cm<EPS) return point();
-    return point(p.x*m/cm,p.y*m/cm);
+bool simetric(vector<pt> &a){ // ordered - check simetric pt
+    int n = a.size(); // . . . . ok / . .  .. !ok
+    pt c = center(a);
+    if(n&1) return false;
+    for(int i=0;i<n/2;i++)
+        if(!col(a[i], a[i+n/2], c))
+            return false;
+    return true;
 }
 
+//\ LINE /\\
 
-////////////
-//  Line  //
-////////////
+struct line{ // line or line segment
 
-struct line{
-    point p1, p2;
-    cod a, b, c; // ax+by+c = 0;
-    // y-y1 = ((y2-y1)/(x2-x1))(x-x1)
-    line(point p1=0, point p2=0): p1(p1), p2(p2){
-        a = p1.y-p2.y;
-        b = p2.x-p1.x;
-        c = -(a*p1.x + b*p1.y);
+    T a, b, c;
+    pt p1, p2; // ax + by + c = 0 -> y = ((-a/b)x - (c/b))
+    line(pt p1, pt p2): p1(p1), p2(p2){
+        a = p1.y-p2.y; b = p2.x-p1.x; c = -(a*p1.x + b*p1.y);
     }
-    line(cod a=0, cod b=0, cod c=0): a(a), b(b), c(c){
-        // Gera os pontos p1 p2 dados os coeficientes
-        // isso aqui eh horrivel mas quebra um galho kkkkkk
-        if(b==0){
-            p1 = point(1, -c/a);
-            p1 = point(0, -c/a);
-        }else{
-            p1 = point(1, (-c-a*1)/b);
-            p2 = point(0, -c/b);
+
+    line(T a, T b, T c): a(a), b(b), c(c){
+        if(b == 0){ p1 = pt(0, -c/a); p2 = pt(0, -c/a); }else{
+            p1 = pt(1, (-c-a*1)/b);
+            p2 = pt(0, -c/b);
         }
     }
 
-    cod eval(point p){
+    T eval(pt p){ // value of {x,y} on line
         return a*p.x+b*p.y+c;
     }
-    bool inside(point p){
+
+    bool insideLine(pt p){ // check if pt is inside line
         return eq(eval(p), 0);
     }
-    point normal(){
-        return point(a, b);
+
+    bool insideSeg(pt p){ // check if pt is inside line seg
+        return (insideLine(p) &&
+                    min(p1.x, p2.x)<=p.x && p.x<=max(p1.x, p2.x) &&
+                    min(p1.y, p2.y)<=p.y && p.y<=max(p1.y, p2.y));
     }
 
-    bool inside_seg(point p){
-        return (inside(p) and
-                min(p1.x, p2.x)<=p.x and p.x<=max(p1.x, p2.x) and
-                min(p1.y, p2.y)<=p.y and p.y<=max(p1.y, p2.y));
+    pt normal(){ // normal vector 
+        return pt(a, b);
     }
 
 };
 
-vp inter_line(line l1, line l2){
+
+vp intersecLine(line l1, line l2){ // pt of two line intersec
     ld det = l1.a*l2.b - l1.b*l2.a;
     if(det==0) return {};
     ld x = (l1.b*l2.c - l1.c*l2.b)/det;
     ld y = (l1.c*l2.a - l1.a*l2.c)/det;
-    return {point(x, y)};
+    return {pt(x, y)};
 }
 
-point inter_seg(line l1, line l2){
-    point ans = inter_line(l1, l2);
-    if(ans.x==INF or !l1.inside_seg(ans) or !l2.inside_seg(ans))
-        return point(INF, INF);
+vp intersecSeg(line l1, line l2){ // intersec of two line seg 
+    vp ans = intersecLine(l1, l2);
+    if(ans.empty() || !l1.insideSeg(ans[0]) || !l2.insideSeg(ans[0]))
+        return {};
     return ans;
 }
 
-ld dseg(point p, point a, point b){ // point - seg
+ld dSeg(pt p, pt a, pt b){ // distance - pt to line seg
     if(((p-a)*(b-a)) < EPS) return norm(p-a);
     if(((p-b)*(a-b)) < EPS) return norm(p-b);
     return abs((p-a)^(b-a))/norm(b-a);
 }
 
-ld dline(point p, line l){ // point - line
+ld dLine(pt p, line l){ // pt - line
     return abs(l.eval(p))/sqrt(l.a*l.a + l.b*l.b);
 }
 
-line mediatrix(point a, point b){
-    point d = (b-a)*2;
-    return line(d.x, d.y, a*a - b*b);
+bool paraline(line r, line s) { // se r e s sao paralelas
+    return paral(r.p1 - r.p2, s.p1 - s.p2);
 }
 
-line perpendicular(line l, point p){ // passes through p
+line perpendicular(line l, pt p){ // passes through p
     return line(l.b, -l.a, -l.b*p.x + l.a*p.y);
 }
 
+line bisector(line l){ // bisctor of a line segment
+    pt mid = pt((l.p1.x + l.p2.x)/2, (l.p1.y + l.p2.y)/2);
+    return perpendicular(l, mid);
+}
 
-////////////
-// Circle //
-////////////
+
+
+//\ POLIGONO /\\
+
+ld area(vp &p){ // polygon area (pts sorted)
+    ld ret = 0;
+    for(int i=2; i<(int)p.size(); i++){
+        ret += (p[i]-p[0])^(p[i-1]-p[0]);
+    }
+    return abs(ret/2);
+}
+
+int isInside(vector<pt>& v, pt p) { // O(n) - pt inside polygon
+    int qt = 0; // 0 outside /  1 inside / 2 border
+    for (int i = 0; i < (int)v.size(); i++) {
+        if (p == v[i]) return 2;
+        int j = (i+1)%v.size();
+        if (eq(p.y, v[i].y) && eq(p.y, v[j].y)) {
+            if ((v[i]-p)*(v[j]-p) < EPS) return 2;
+            continue;
+        }
+        bool baixo = v[i].y+EPS < p.y;
+        if (baixo == (v[j].y+EPS < p.y)) continue;
+        auto t = (p-v[i])^(v[j]-v[i]);
+        if (eq(t, 0)) return 2;
+        if (baixo == (t > EPS)) qt += baixo ? 1 : -1;
+    }
+    return qt != 0;
+}
+
+bool isIntersec(vector<pt> v1, vector<pt> v2) { // 2 polygons intersec- O(n*m)
+    int n = v1.size(), m = v2.size();
+    for (int i = 0; i < n; i++) if (isInside(v2, v1[i])) return 1;
+    for (int i = 0; i < n; i++) if (isInside(v1, v2[i])) return 1;
+    for (int i = 0; i < n; i++) for (int j = 0; j < m; j++)
+        if (intersecSeg(line(v1[i], v1[(i+1)%n]), line(v2[j], v2[(j+1)%m])).size() != 0) return 1;
+    return 0;
+}
+
+// ld distPol(vector<pt> v1, vector<pt> v2) { // distancia de poligonos
+//     if (isIntersec(v1, v2)) return 0;
+
+//     ld ret = DINF;
+//     for (int i = 0; i < v1.size(); i++){
+//         for (int j = 0; j < v2.size(); j++){
+//             ret = min(ret, dSeg(line(v1[i], v1[(i + 1) % v1.size()]),
+//                     line(v2[j], v2[(j + 1) % v2.size()])));
+//         }
+//     }
+//     return ret;
+// }
+
+//\ Circle /\\
+
 
 struct circle{
-    point c; cod r;
+    pt c; T r;
     circle() : c(0, 0), r(0){}
-    circle(const point o) : c(o), r(0){}
-    circle(const point a, const point b){
+    circle(const pt o) : c(o), r(0){}
+    circle(const pt a, const pt b){
         c = (a+b)/2;
         r = norm(a-c);
     }
-    circle(const point a, const point b, const point cc){
-        c = inter_line(mediatrix(a, b), mediatrix(b, cc));
-        r = norm(a-c);
-    }
-    bool inside(const point &a) const{
+    bool inside(const pt &a) const{
         return norm(a - c) <= r;
     }
-    pair<point, point> getTangentPoint(point p) {
+    pair<pt, pt> getTangent(pt p) {
         ld d1 = norm(p-c), theta = asin(r/d1);
-        point p1 = rotccw(c-p,-theta);
-        point p2 = rotccw(c-p,theta);
+        pt p1 = rotccw(c-p,-theta);
+        pt p2 = rotccw(c-p,theta);
         p1 = p1*(sqrt(d1*d1-r*r)/d1)+p;
         p2 = p2*(sqrt(d1*d1-r*r)/d1)+p;
         return {p1,p2};
     }
 };
 
-// minimum circle cover O(n) amortizado
-circle min_circle_cover(vector<point> v){
-    random_shuffle(v.begin(), v.end());
-    circle ans;
-    int n = v.size();
-    for(int i=0;i<n;i++) if(!ans.inside(v[i])){
-        ans = circle(v[i]);
-        for(int j=0;j<i;j++) if(!ans.inside(v[j])){
-            ans = circle(v[i], v[j]);
-            for(int k=0;k<j;k++) if(!ans.inside(v[k])){
-                ans = circle(v[i], v[j], v[k]);
-            }
-        }
-    }
-    return ans;
-}
 
 
-circle incircle( point p1, point p2, point p3 ){
+circle incircle( pt p1, pt p2, pt p3 ){
     ld m1=norm(p2-p3);
     ld m2=norm(p1-p3);
     ld m3=norm(p1-p2);
-    point c = (p1*m1+p2*m2+p3*m3)*(1/(m1+m2+m3));
+    pt c = (p1*m1+p2*m2+p3*m3)*(1/(m1+m2+m3));
     ld s = 0.5*(m1+m2+m3);
     ld r = sqrt(s*(s-m1)*(s-m2)*(s-m3))/s;
     return circle(c, r);
 }
 
-circle circumcircle(point a, point b, point c) {
+circle circumCircle(pt a, pt b, pt c) {
     circle ans;
-    point u = point((b-a).y, -(b-a).x);
-    point v = point((c-a).y, -(c-a).x);
-    point n = (c-b)*0.5;
+    pt u = pt((b-a).y, -(b-a).x);
+    pt v = pt((c-a).y, -(c-a).x);
+    pt n = (c-b)*0.5;
     ld t = (u^n)/(v^u);
     ans.c = ((a+c)*0.5) + (v*t);
     ans.r = norm(ans.c-a);
     return ans;
 }
 
-vp inter_circle_line(circle C, line L){
-    point ab = L.p2 - L.p1, p = L.p1 + ab * ((C.c-L.p1)*(ab) / (ab*ab));
+vp intersecCircleLine(circle C, line L){
+    pt ab = L.p2 - L.p1, p = L.p1 + ab * ((C.c-L.p1)*(ab) / (ab*ab));
     ld s = (L.p2-L.p1)^(C.c-L.p1), h2 = C.r*C.r - s*s / (ab*ab);
     if (h2 < 0) return {};
     if (h2 == 0) return {p};
-    point h = (ab/norm(ab)) * sqrt(h2);
+    pt h = (ab/norm(ab)) * sqrt(h2);
     return {p - h, p + h};
 }
 
-vp inter_circle(circle C1, circle C2){
+vp intersecCircles(circle C1, circle C2){
     if(C1.c == C2.c) { assert(C1.r != C2.r); return {}; }
-    point vec = C2.c - C1.c;
+    pt vec = C2.c - C1.c;
     ld d2 = vec*vec, sum = C1.r+C2.r, dif = C1.r-C2.r;
     ld p = (d2 + C1.r*C1.r - C2.r*C2.r)/(d2*2), h2 = C1.r*C1.r - p*p*d2;
     if (sum*sum < d2 or dif*dif > d2) return {};
-    point mid = C1.c + vec*p, per = point(-vec.y, vec.x) * sqrt(max((ld)0, h2) / d2);
+    pt mid = C1.c + vec*p, per = pt(-vec.y, vec.x) * sqrt(max((ld)0, h2) / d2);
     if(eq(per.x, 0) and eq(per.y, 0)) return {mid};
     return {mid + per, mid - per};
 }
+
+// circle minCircleCover(vector<pt> v){ // O(n) min circle that cover all pts 
+//     // random_shuffle(v.begin(), v.end());
+//     circle ans;
+//     int n = v.size();
+//     for(int i=0;i<n;i++) if(!ans.inside(v[i])){
+//         ans = circle(v[i]);
+//         for(int j=0;j<i;j++) if(!ans.inside(v[j])){
+//             ans = circle(v[i], v[j]);
+//             for(int k=0;k<j;k++) if(!ans.inside(v[k])){
+//                 ans = circle(v[i], v[j], v[k]);
+//             }
+//         }
+//     }
+//     return ans;
+// }
+
+//\ EXTRA C++ complex library /\\
+
+typedef double T;
+typedef complex<T> pt;
+#define x real()
+#define y imag()
+
+pt p{3,-4};
+cout << p.x << " " << p.y << "\n"; // 3 -4
+cout << p << "\n"; // (3,-4)
+
+pt p{-3,2};
+p.x = 1; // doesn’t compile
+p = {1,2}; // correct
+
+pt a{3,1}, b{1,-2};
+a += 2.0*b; // a = (5,-3)
+cout << a*b << " " << a/-b << "\n"; // (-1,-13) (-2.2,-1.4)// typedef int T;
+// bool eq(T a, T b){ return (a==b); }
+typedef ld T; // or int
+bool eq(T a, T b){ return abs(a - b) <= EPS; }
