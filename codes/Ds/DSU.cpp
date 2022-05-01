@@ -3,11 +3,11 @@
 struct DSU {
     int n = 0;
     vector<int> p;
-    vector<int> r;
+    vector<int> sz;
 
     DSU(int nn){
         n = nn;
-        r.assign(n + 5, 1);
+        sz.assign(n + 5, 1);
         p.assign(n + 5, 0);
         iota(p.begin(), p.end(), 0);
     }
@@ -19,9 +19,9 @@ struct DSU {
     void join(int a, int b){
         a = find(a); b = find(b);
         if(a == b) return;
-        if(r[a] < r[b]) swap(a, b);
+        if(sz[a] < sz[b]) swap(a, b);
         p[b] = a;
-        r[a] += r[b];
+        sz[a] += sz[b];
     }   
 };
 
