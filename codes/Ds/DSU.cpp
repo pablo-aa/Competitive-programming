@@ -1,30 +1,29 @@
 // Disjoint union set
 // Operation ~ O(1)
-int r[MAXN];
-vector<int> qtd(MAXN, 1);
+struct DSU {
+    int n = 0;
+    vector<int> p;
+    vector<int> r;
 
-int get(int x) {
-  return p[x] = (p[x] == x ? x : get(p[x]));
-}
+    DSU(int nn){
+        n = nn;
+        r.assign(n + 5, 1);
+        p.assign(n + 5, 0);
+        iota(p.begin(), p.end(), 0);
+    }
 
-void unite(int a, int b){
-  a = get(a);
-  b = get(b);
+    int find(int x){
+        return p[x] = (p[x] == x ? x : find(p[x]));
+    }
 
-  if(a == b) return;
-
-  if(r[a] == r[b]){
-  	p[a] = b;
-  	r[b]++;
-  	qtd[b]+=qtd[a];
-  }else if(r[a] > r[b]){
-  	p[b] = a;
-  	qtd[a]+=qtd[b];
-  }else{
-  	p[a] = b;
-  	qtd[b]+=qtd[a];
-  }
-}
+    void join(int a, int b){
+        a = find(a); b = find(b);
+        if(a == b) return;
+        if(r[a] < r[b]) swap(a, b);
+        p[b] = a;
+        r[a] += r[b];
+    }   
+};
 
 // Initializing values in main()
-for(int i = 1; i <= n; i++) p[i]=i;
+// DSU(n+1)
