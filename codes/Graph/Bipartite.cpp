@@ -23,8 +23,8 @@ bool bfs(int s){
 			}
 		}
 
-		return true;
 	}
+	return true;
 }
 
 bool is_bipartite(int n){
