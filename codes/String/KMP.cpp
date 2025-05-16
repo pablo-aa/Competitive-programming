@@ -28,7 +28,7 @@ vector<ll> kmp(const string &text, const string &pattern) {
     ll n = text.size();
     ll m = pattern.size();
     
-    if (m == 0) return positions;
+    if (m == 0 || m > n) return positions;
     
     vector<ll> border = compute_prefix(pattern);
     
